@@ -17,6 +17,7 @@ type Server interface {
 	RegisterRoutes(register func(rg *gin.RouterGroup))
 	RegisterPrivateRoutes(register func(rg *gin.RouterGroup), middleware ...gin.HandlerFunc)
 	RegisterRoute(method, path string, handler gin.HandlerFunc)
+	Routes(routes []RouteConfig)
 }
 
 type server struct {
