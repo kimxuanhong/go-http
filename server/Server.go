@@ -152,3 +152,34 @@ func (s *server) RegisterRoute(method, path string, handler gin.HandlerFunc) {
 		log.Printf("Unsupported method: %s", method)
 	}
 }
+
+// Routes registers a list of routes into the Gin engine of the server.
+//
+// Each route in the list will:
+//   - Be grouped by `Path` using `engine.Group(Path)`
+//   - Apply any provided middleware to that group
+//   - Register the corresponding handler for the HTTP method through `RegisterRoute`
+//
+// Note: `RegisterRoute` should handle adding the route to the Gin engine properly.
+//
+// Parameters:
+//   - routes: A list of route configurations, including Path, Method, Middleware, and Handler.
+//
+// Example:
+//
+//	routes := []RouteConfig{
+//	    {
+//	        Path:       "/users/:id",
+//	        Method:     http.MethodGet,
+//	        HandleFunc: userHandler.GetUser,
+//	        Middleware: []gin.HandlerFunc{AuthMiddleware},
+//	    },
+//	}
+//	s.Routes(routes)
+func (s *server) Routes(routes []RouteConfig) {
+	for _, r := range routes {
+		group := s.engine.Group(r.Path)
+		group.Use(r.Middleware...)
+		s.RegisterRoute(r.Method, r.Path, r.HandleFunc)
+	}
+}
